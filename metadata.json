@@ -1,0 +1,6 @@
+{
+  "name": "Método Conteúdo Inteligente",
+  "description": "Sistema interativo de Inteligência Artificial para gerar 30 dias de conteúdo estratégico de alta conversão para o seu Instagram em minutos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
