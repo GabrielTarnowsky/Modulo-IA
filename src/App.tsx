@@ -331,67 +331,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#050508] text-gray-100 font-sans antialiased overflow-x-hidden relative pb-20">
       
-      {/* PERSISTENT FLOATING VIEW SWITCHER FOR THE USER TO PREVIEW */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] bg-zinc-950/95 border border-zinc-800 p-1.5 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-1">
-        <button
-          onClick={() => setCurrentView("landing")}
-          className={`px-4 py-2 rounded-full text-xs font-black tracking-wide uppercase transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-            currentView === "landing"
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/15"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Página de Vendas
-        </button>
-        <button
-          onClick={() => setCurrentView("creatives")}
-          className={`px-4 py-2 rounded-full text-xs font-black tracking-wide uppercase transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-            currentView === "creatives"
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/15"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-        >
-          <Video className="w-3.5 h-3.5 text-blue-400" /> Criativos & Ideias
-        </button>
-        <button
-          onClick={() => setCurrentView("checkout")}
-          className={`px-4 py-2 rounded-full text-xs font-black tracking-wide uppercase transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
-            currentView === "checkout"
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/15"
-              : "text-zinc-400 hover:text-zinc-200"
-          }`}
-        >
-          <CreditCard className="w-3.5 h-3.5 text-blue-400" /> Checkout Kiwify
-        </button>
-      </div>
 
-      {currentView === "checkout" ? (
-        <CheckoutExample />
-      ) : currentView === "creatives" ? (
-        <>
-          {/* HEADER NAVIGATION */}
-          <header className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-zinc-800/50 animate-fade-in">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Sparkles className="w-5 h-5 text-white animate-pulse" />
-              </div>
-              <div>
-                <span className="font-display font-black text-lg tracking-tight block">
-                  MÉTODO <span className="text-blue-500">CONTEÚDO</span>
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-purple-400 -mt-1 block">INTELIGENTE</span>
-              </div>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-              <button onClick={() => setCurrentView("landing")} className="transition hover:text-white cursor-pointer bg-transparent border-none">Página de Vendas</button>
-              <button onClick={() => setCurrentView("checkout")} className="transition hover:text-white cursor-pointer bg-transparent border-none">Checkout Exemplo</button>
-            </nav>
-          </header>
-          <CreativesView checkoutUrl={checkoutUrl} setCurrentView={setCurrentView} />
-        </>
-      ) : (
-        <>
           {/* HIGH CONVERTING TOP BAR WITH TIMER */}
           <div className="bg-gradient-to-r from-red-600 via-purple-600 to-indigo-600 text-white text-[11px] sm:text-xs font-bold text-center py-2.5 px-4 flex items-center justify-center gap-2 relative z-50 shadow-lg">
             <Clock className="w-3.5 h-3.5 text-white animate-pulse" />
@@ -1290,8 +1230,7 @@ export default function App() {
         </div>
       </footer>
 
-        </>
-      )}
+
 
     </div>
   );
