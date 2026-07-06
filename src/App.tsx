@@ -280,24 +280,24 @@ export default function App() {
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold tracking-wider uppercase">
               <Zap className="w-3.5 h-3.5 text-blue-400 animate-bounce" />
-              O SISTEMA DE PRODUTIVIDADE VIRAL
+              ⚡ O MÉTODO DE PROMPTS DE COPYS SENIORES
             </div>
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold leading-[1.1] tracking-tight">
-              Recupere seu tempo e <span className="text-gradient">domine o seu nicho</span> com IA.
+              Cansado de travar na tela em branco? <span className="text-gradient">Crie 30 dias de conteúdo estratégico em 1 hora.</span>
             </h1>
             
             <p className="text-lg md:text-xl text-zinc-400 font-light max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              O sistema prático para criar <strong className="text-white">30 dias de conteúdo estratégico em minutos</strong> — mesmo que você nunca tenha aberto o ChatGPT antes.
+              O <strong className="text-white">Método Conteúdo Inteligente</strong> é um sistema pronto de Engenharia de Prompts para empreendedores e profissionais. Ele treina a inteligência artificial para agir como seu Copywriter de Elite. Copie, cole e destrave vendas diretas no direct poupando mais de 20 horas semanais.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+            <div className="flex flex-col items-center lg:items-start gap-3 pt-2">
               {isPhotoMode ? (
                 <div 
-                  className="bg-gradient-to-r from-blue-600 to-blue-800 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto text-center select-none shadow-xl shadow-blue-500/10"
+                  className="bg-gradient-to-r from-blue-600 to-blue-800 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto text-center select-none shadow-xl shadow-blue-500/10 uppercase tracking-tight"
                   id="hero-buy-btn"
                 >
-                  QUERO ACESSO IMEDIATO
+                  🚀 QUERO ACESSO IMEDIATO COM BÔNUS
                 </div>
               ) : (
                 <>
@@ -305,21 +305,25 @@ export default function App() {
                     href={checkoutUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto inline-block shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition duration-300 text-center cursor-pointer"
+                    className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto inline-block shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition duration-300 text-center cursor-pointer uppercase tracking-tight"
                     id="hero-buy-btn"
                   >
-                    QUERO ACESSO IMEDIATO
+                    🚀 QUERO ACESSO IMEDIATO COM BÔNUS
                   </a>
                   
                   <a 
                     href="#como-funciona" 
-                    className="bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-5 px-8 rounded-2xl w-full sm:w-auto border border-zinc-800 hover:border-zinc-700 transition flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-4 px-8 rounded-2xl w-full sm:w-auto border border-zinc-800 hover:border-zinc-700 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
                     id="hero-test-btn"
                   >
-                    Conhecer o Método
+                    Conhecer a Transformação
                   </a>
                 </>
               )}
+              
+              <p className="text-[11px] text-zinc-500 font-semibold mt-1">
+                🔒 Compra 100% segura • ⚡ Acesso imediato • 🛡️ 7 dias de garantia • 🔄 Atualizações inclusas
+              </p>
             </div>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 pt-2 text-xs text-zinc-500 font-medium uppercase tracking-widest">
@@ -401,28 +405,28 @@ export default function App() {
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <Clock className="text-red-400 mb-5 w-9 h-9" />
               <h4 className="font-display font-bold text-lg mb-2 text-white">Horas Perdidas</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Passa horas olhando para uma tela em branco pensando no que postar, procrastina e acaba não postando nada.</p>
+              <p className="text-zinc-400 text-sm leading-relaxed">Você passa horas olhando para uma tela em branco tentando ter uma ideia, procrastina e acaba não postando nada pelo cansaço.</p>
             </div>
 
             <div className="glass-card p-8 rounded-3xl border-none bg-zinc-900/40 relative overflow-hidden group hover:bg-zinc-900/60 transition duration-300">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <Edit3 className="text-red-400 mb-5 w-9 h-9" />
-              <h4 className="font-display font-bold text-lg mb-2 text-white">Legendas Frias</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Cria textos robóticos ou formais demais que não engajam, não retêm a atenção e não geram conexão real.</p>
+              <h4 className="font-display font-bold text-lg mb-2 text-white">Textos Invisíveis</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">Cria legendas frias ou cheias de conteúdo técnico chato que as pessoas ignoram no feed, sem gerar conexão com o seu público.</p>
             </div>
 
             <div className="glass-card p-8 rounded-3xl border-none bg-zinc-900/40 relative overflow-hidden group hover:bg-zinc-900/60 transition duration-300">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <HelpCircle className="text-red-400 mb-5 w-9 h-9" />
-              <h4 className="font-display font-bold text-lg mb-2 text-white">Medo do ChatGPT</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Tenta usar IA mas recebe respostas genéricas, superficiais e com aquele típico tom "robótico" sem graça.</p>
+              <h4 className="font-display font-bold text-lg mb-2 text-white">Resultados Artificiais</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">Tenta usar o ChatGPT comum e recebe respostas óbvias e artificiais, cheias de emojis bobos que gritam que foram feitos por robô.</p>
             </div>
 
             <div className="glass-card p-8 rounded-3xl border-none bg-zinc-900/40 relative overflow-hidden group hover:bg-zinc-900/60 transition duration-300">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <TrendingUp className="text-red-400 mb-5 w-9 h-9" />
-              <h4 className="font-display font-bold text-lg mb-2 text-white">Zero Clientes</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Até posta algumas dicas úteis, mas seu conteúdo não gera leads e ninguém te pergunta o preço do serviço no Direct.</p>
+              <h4 className="font-display font-bold text-lg mb-2 text-white">Zero Clientes na DM</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">Até posta dicas úteis, mas seu conteúdo atrai apenas curiosos. Ninguém te pergunta o preço do serviço ou compra no direct.</p>
             </div>
           </div>
         </div>
@@ -433,7 +437,7 @@ export default function App() {
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-20">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-500">O Segredo Revelado</span>
           <h2 className="text-3xl sm:text-5xl font-display font-extrabold italic">Os 3 Pilares do Método Conteúdo Inteligente</h2>
-          <p className="text-zinc-400 text-base sm:text-lg">Diga adeus ao bloqueio criativo e crie posts como um copywriter profissional em tempo recorde.</p>
+          <p className="text-zinc-400 text-base sm:text-lg">Diga adeus ao bloqueio criativo e crie posts estratégicos como um copywriter profissional em tempo recorde.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -443,14 +447,14 @@ export default function App() {
             <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">
               01
             </div>
-            <h3 className="text-2xl font-display font-extrabold text-white">Estratégia de Conversão</h3>
+            <h3 className="text-2xl font-display font-extrabold text-white">Atração de Compradores</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Chega de posts aleatórios sobre "o que eu fiz hoje". O método foca estritamente em funis de conteúdo baseados nas dores do seu cliente ideal. Cada post tem o objetivo claro de levantar a mão e vender.
+              Pare de postar aleatoriedades sobre seu dia a dia. Você usará um funil de venda direta que desperta o desejo de compra nas dores profundas do cliente. Cada post guiará o leitor a levantar a mão no direct querendo seu produto ou serviço.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Atração de Leads qualificados</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Quebra antecipada de objeções</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> CTAs agressivas invisíveis</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Atração automática de leads prontos para pagar</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Quebra antecipada de objeções de preço</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Chamadas sutis e irresistíveis para a DM</li>
             </ul>
           </div>
 
@@ -459,14 +463,14 @@ export default function App() {
             <div className="w-12 h-12 bg-purple-600/10 rounded-2xl flex items-center justify-center text-purple-400 font-bold border border-purple-500/20">
               02
             </div>
-            <h3 className="text-2xl font-display font-extrabold text-white">Engenharia de Prompts</h3>
+            <h3 className="text-2xl font-display font-extrabold text-white">Escrita Magnética Humana</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              O ChatGPT só te dá textos ruins porque você dá comandos ruins. O Método entrega prompts profissionais estruturados que ensinam a IA a pensar, adotar persona de copywriter de elite, usar técnicas como AIDA e PAS.
+              Diga adeus a textos robóticos. Nosso sistema de prompts avançados ensina a inteligência artificial a ler a mente do seu público, usando gatilhos emocionais da redação publicitária (copywriting) em parágrafos dinâmicos.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Tom de voz 100% humano</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Formatação escaneável nativa</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Textos que geram identificação</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Tom de voz 100% natural, empático e fluído</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Legendas curtas e escaneáveis no celular</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Ganchos impossíveis de ignorar no scroll</li>
             </ul>
           </div>
 
@@ -475,17 +479,16 @@ export default function App() {
             <div className="w-12 h-12 bg-pink-600/10 rounded-2xl flex items-center justify-center text-pink-400 font-bold border border-pink-500/20">
               03
             </div>
-            <h3 className="text-2xl font-display font-extrabold text-white">Consistência Blindada</h3>
+            <h3 className="text-2xl font-display font-extrabold text-white">Liberdade de Tempo</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              O segredo para crescer nas redes sociais é a consistência. Com nosso calendário automatizado e prompts de planejamento ágil, você consegue sentar, criar todo o seu estoque estratégico do mês e agendar tudo em apenas 1 hora.
+              Recupere a paz nos seus fins de semana. Com nosso calendário de funil estratégico e planejamento rápido de prompts, você criará e agendará todo o seu estoque de conteúdo estratégico para 30 dias em apenas 1 hora.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Fim do desespero de última hora</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Menos estresse, mais vendas</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Perfil ativo de domingo a domingo</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Fim definitivo da ansiedade do post de última hora</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Menos desgaste mental e muito mais faturamento</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Perfil vendendo de domingo a domingo no automático</li>
             </ul>
           </div>
-
         </div>
       </section>
 
@@ -500,30 +503,122 @@ export default function App() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
             <span className="text-3xl">📘</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-blue-400 block">Guia de Implementação</span>
-            <h3 className="font-display font-extrabold text-base text-white">Manual Prático de Copywriting</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">O passo a passo estratégico ensinando como modelar dores e necessidades em ideias que convertem.</p>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-blue-400 block">Manual do Comportamento</span>
+            <h3 className="font-display font-extrabold text-base text-white">Guia Prático de Copywriting</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">Aprenda a psicologia humana de consumo por trás de posts que fazem o cliente abrir a carteira e comprar.</p>
           </div>
 
           <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
             <span className="text-3xl">🧠</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">Prompts de Elite</span>
-            <h3 className="font-display font-extrabold text-base text-white">20 Prompts Premium Inéditos</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Estruturas secretas prontas para gerar carrosséis, posts de atração, depoimentos falsos que quebram objeções e de venda direta.</p>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">Bibliotecas Master</span>
+            <h3 className="font-display font-extrabold text-base text-white">20 Prompts Elite Inéditos</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">Copie e cole os comandos secretos que instruem a inteligência artificial a agir como redator profissional sênior.</p>
           </div>
 
           <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
             <span className="text-3xl">📅</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-pink-400 block">Calendário 30 Dias</span>
-            <h3 className="font-display font-extrabold text-base text-white">Cronograma Completo</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Chega de ter ideias no dia. 30 dias de linha de conteúdo totalmente mapeada e classificada de acordo com o nível de funil.</p>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-pink-400 block">Organização Completa</span>
+            <h3 className="font-display font-extrabold text-base text-white">Calendário de Funil (30 Dias)</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">Chega de ter ideias no dia. 30 dias de linha editorial classificada e mapeada para aquecer seguidores frios.</p>
           </div>
 
           <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
             <span className="text-3xl">🎥</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-400 block">Scripts de Vídeo</span>
-            <h3 className="font-display font-extrabold text-base text-white">Roteiros de Reels de 15s</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Formatos magnéticos com ganchos falados, transições e direcionamento para reter a atenção e engajar de forma automática.</p>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-400 block">Atenção Extrema</span>
+            <h3 className="font-display font-extrabold text-base text-white">Roteiros de Reels e Carrossel</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">Ganchos magnéticos falados e transições pensadas para reter e direcionar as pessoas direto para a compra.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* EXCLUSIVE BONUSES SECTION */}
+      <section className="py-24 bg-[#050508] border-t border-zinc-900">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center space-y-4 mb-20">
+            <span className="text-xs font-bold uppercase tracking-widest text-purple-400">Oferta Exclusiva</span>
+            <h2 className="text-3xl sm:text-5xl font-display font-extrabold italic">Leve esses 4 Bônus Secretos Gratuitamente:</h2>
+            <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto">
+              Ao garantir sua licença hoje, você leva um pacote completo de ferramentas de aceleração comerciais que custariam mais de R$ 240 reais separadamente.
+            </p>
+            <div className="w-20 h-1 bg-purple-500/50 mx-auto rounded-full" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Bonus 1 */}
+            <div className="glass-card p-8 rounded-[32px] border border-blue-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-blue-500/40 transition duration-300">
+              <div className="absolute top-4 right-4 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] font-bold px-3 py-1 rounded-full">
+                VALOR: R$ 97,00
+              </div>
+              <div className="space-y-4">
+                <span className="text-4xl">🤖</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-blue-400 block">Super Bônus 01</span>
+                <h3 className="text-2xl font-display font-extrabold text-white">Script Secreto de Vendas por Direct</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  O exato passo a passo estratégico para configurar automações no Direct (ManyChat). Faça seu celular apitar com vendas automáticas sempre que comentarem no seu post, convertendo de forma humanizada.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
+                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
+                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
+              </div>
+            </div>
+
+            {/* Bonus 2 */}
+            <div className="glass-card p-8 rounded-[32px] border border-purple-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-purple-500/40 transition duration-300">
+              <div className="absolute top-4 right-4 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[10px] font-bold px-3 py-1 rounded-full">
+                VALOR: R$ 47,00
+              </div>
+              <div className="space-y-4">
+                <span className="text-4xl">🎯</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-purple-400 block">Super Bônus 02</span>
+                <h3 className="text-2xl font-display font-extrabold text-white">50 Prompts Secretos para Anúncios (Meta Ads)</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Copies e roteiros de anúncios patrocinados prontos para rodar. Crie criativos de alta retenção no Instagram e Facebook, economizando dinheiro em testes e indo direto na copy validada.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
+                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
+                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
+              </div>
+            </div>
+
+            {/* Bonus 3 */}
+            <div className="glass-card p-8 rounded-[32px] border border-pink-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-pink-500/40 transition duration-300">
+              <div className="absolute top-4 right-4 bg-pink-500/10 border border-pink-500/30 text-pink-400 text-[10px] font-bold px-3 py-1 rounded-full">
+                VALOR: R$ 67,00
+              </div>
+              <div className="space-y-4">
+                <span className="text-4xl">📅</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-pink-400 block">Super Bônus 03</span>
+                <h3 className="text-2xl font-display font-extrabold text-white">Calendário Editorial de 365 Dias</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  Nunca mais trave sem saber o que postar. Tenha em mãos a linha mestra para o ano inteiro, mapeando de forma antecipada as dores do seu cliente ideal para datas comemorativas e picos sazonais do mercado.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
+                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
+                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
+              </div>
+            </div>
+
+            {/* Bonus 4 */}
+            <div className="glass-card p-8 rounded-[32px] border border-emerald-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-emerald-500/40 transition duration-300">
+              <div className="absolute top-4 right-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full">
+                VALOR: R$ 37,00
+              </div>
+              <div className="space-y-4">
+                <span className="text-4xl">👥</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 block">Super Bônus 04</span>
+                <h3 className="text-2xl font-display font-extrabold text-white">Grupo Silencioso de Atualizações</h3>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  O algoritmo do Instagram e a inteligência artificial atualizam constantemente. Com esse grupo silencioso, você receberá novos prompts adaptados às novas diretrizes, sem spam ou chat paralelo.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
+                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
+                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -531,10 +626,19 @@ export default function App() {
       {/* DETAILED RESULTS & TESTIMONIALS */}
       <section id="depoimentos" className="py-24 bg-[#08080c] border-y border-zinc-900">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
             <div className="space-y-4 text-center lg:text-left">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-500">Histórias Reais de Crescimento</span>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold italic">Quem já usou o Método Conteúdo Inteligente aprovou:</h2>
+              <span className="text-xs font-bold uppercase tracking-widest text-blue-500">Resultados Reais Comprovados</span>
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold italic">Quem colocou em prática os prompts do Método:</h2>
+              
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mt-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl w-fit mx-auto lg:mx-0">
+                <div className="flex -space-x-2">
+                  <img className="w-7 h-7 rounded-full border-2 border-zinc-950 object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150" alt="aluno" />
+                  <img className="w-7 h-7 rounded-full border-2 border-zinc-950 object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="aluno" />
+                  <img className="w-7 h-7 rounded-full border-2 border-zinc-950 object-cover" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=150&h=150" alt="aluno" />
+                </div>
+                <span className="text-xs font-bold text-emerald-400">Mais de 1.450 alunos faturando e economizando tempo com o Método</span>
+              </div>
             </div>
 
             {/* Testimonial Filter Buttons */}
@@ -579,9 +683,29 @@ export default function App() {
                       {t.metric}
                     </span>
                   </div>
+
+                  {/* 5-Star Rating */}
+                  <div className="flex items-center gap-0.5 text-amber-400 text-xs">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                  </div>
+
                   <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed italic">
                     "{t.content}"
                   </p>
+
+                  {/* Before & After comparison */}
+                  {(t.before && t.after) && (
+                    <div className="mt-4 p-3 bg-zinc-950/80 rounded-2xl border border-zinc-800/50 space-y-2 text-xs">
+                      <div className="flex items-start gap-2">
+                        <span className="text-red-400 font-bold uppercase tracking-wider shrink-0 bg-red-400/10 px-1.5 py-0.5 rounded text-[9px]">Antes</span>
+                        <span className="text-zinc-400">{t.before}</span>
+                      </div>
+                      <div className="flex items-start gap-2 border-t border-zinc-900 pt-2">
+                        <span className="text-emerald-400 font-bold uppercase tracking-wider shrink-0 bg-emerald-400/10 px-1.5 py-0.5 rounded text-[9px]">Depois</span>
+                        <span className="text-zinc-200 font-semibold">{t.after}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t border-zinc-900 pt-4 mt-6 flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
@@ -629,21 +753,29 @@ export default function App() {
             </span>
 
             <h2 className="text-2xl sm:text-4xl font-display font-black mb-6 text-white tracking-tight">
-              MÉTODO CONTEÚDO INTELIGENTE
+              MÉTODO CONTEÚDO INTELIGENTE + 4 SUPER BÔNUS
             </h2>
             
-            <div className="mb-8 space-y-2">
-              <p className="text-zinc-500 line-through text-lg sm:text-xl font-bold">De R$ 97,00</p>
+            <div className="mb-8 space-y-3">
+              <div className="text-zinc-400 text-xs sm:text-sm space-y-1.5 max-w-md mx-auto bg-zinc-950/60 p-5 rounded-2xl border border-zinc-900 mb-6 text-left">
+                <div className="flex justify-between"><span>Guia de Prompts de Elite:</span><span className="line-through">R$ 97,00</span></div>
+                <div className="flex justify-between"><span>Bônus 1: Script Direct (ManyChat):</span><span className="line-through">R$ 97,00</span></div>
+                <div className="flex justify-between"><span>Bônus 2: 50 Prompts Anúncios (Patrocinado):</span><span className="line-through">R$ 47,00</span></div>
+                <div className="flex justify-between"><span>Bônus 3: Calendário 365 Dias:</span><span className="line-through">R$ 67,00</span></div>
+                <div className="flex justify-between border-b border-zinc-800 pb-2.5"><span>Bônus 4: Grupo VIP Algoritmo:</span><span className="line-through">R$ 37,00</span></div>
+                <div className="flex justify-between font-bold text-white pt-2 text-sm"><span>Valor Total Real:</span><span className="line-through text-red-500">R$ 345,00</span></div>
+              </div>
               
-              <div className="flex items-center justify-center">
-                <span className="text-xl sm:text-2xl text-zinc-400 font-medium mr-2">Apenas</span>
-                <div className="text-6xl sm:text-8xl font-black text-white tracking-tighter">
-                  R$ 29<span className="text-2xl sm:text-3xl">,90</span>
+              <p className="text-zinc-400 font-medium text-base sm:text-lg mb-2">Leve tudo hoje por apenas</p>
+              <div className="flex items-end justify-center gap-2">
+                <span className="text-2xl sm:text-3xl font-black text-white mb-2">R$</span>
+                <div className="text-7xl sm:text-9xl font-black text-white tracking-tighter leading-none">
+                  29<span className="text-3xl sm:text-4xl">,90</span>
                 </div>
               </div>
               
-              <p className="text-blue-400 font-black tracking-widest text-xs sm:text-sm uppercase pt-6">
-                Economize tempo e publique com consistência estratégica
+              <p className="text-emerald-400 font-black tracking-widest text-xs uppercase pt-6 animate-pulse">
+                ⚡ Lote promocional limitado a apenas 14 licenças restantes!
               </p>
             </div>
             
@@ -652,7 +784,7 @@ export default function App() {
                 className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-5 px-8 rounded-2xl text-lg sm:text-xl font-display font-black w-full block shadow-xl shadow-blue-500/10 uppercase tracking-tight select-none"
                 id="cta-final-purchase"
               >
-                🚀 QUERO GARANTIR MINHA VAGA
+                🚀 QUERO GARANTIR MINHA VAGA E OS BÔNUS
               </div>
             ) : (
               <a 
@@ -662,9 +794,13 @@ export default function App() {
                 className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white py-5 px-8 rounded-2xl text-lg sm:text-xl font-display font-black w-full block shadow-xl shadow-blue-500/20 transform hover:-translate-y-0.5 hover:shadow-blue-500/30 transition-all uppercase tracking-tight cursor-pointer"
                 id="cta-final-purchase"
               >
-                🚀 QUERO GARANTIR MINHA VAGA
+                🚀 QUERO GARANTIR MINHA VAGA E OS BÔNUS
               </a>
             )}
+            
+            <p className="text-[11px] text-zinc-500 mt-3 font-semibold">
+              🔒 Compra 100% segura • ⚡ Acesso imediato • 🛡️ 7 dias de garantia • 🔄 Atualizações gratuitas inclusas
+            </p>
             
             <div className="mt-8 grid grid-cols-3 gap-2 text-[10px] text-zinc-500 font-bold uppercase tracking-wider border-t border-zinc-900 pt-6">
               <div>

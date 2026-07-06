@@ -20,6 +20,8 @@ export interface Testimonial {
   content: string;
   niche: string;
   metric: string;
+  before?: string;
+  after?: string;
 }
 
 export interface FaqItem {
