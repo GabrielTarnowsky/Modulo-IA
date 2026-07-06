@@ -33,13 +33,72 @@ import {
   Printer,
   Calendar,
   Smartphone,
-  Image
+  Image,
+  CreditCard,
+  Lightbulb,
+  Layers,
+  Video,
+  Pause,
+  RefreshCw
 } from "lucide-react";
 import { testimonials, faqItems } from "./data";
 import { readyToUseCreatives } from "./creativesData";
 import { GeneratedPost, GeneratedAdCreative } from "./types";
+import CheckoutExample from "./CheckoutExample";
+import CreativesView from "./components/CreativesView";
+// @ts-ignore
+import ebookCover from "./assets/images/ebook_cover_mockup_1782842871838.jpg";
 
 export default function App() {
+  const [currentView, setCurrentView] = useState<"landing" | "checkout" | "creatives">("landing");
+  const [activeSubTab, setActiveSubTab] = useState<"library" | "ai-generator">("library");
+
+  // Countdown timer state for high-converting scarcity (14:59 repeating)
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const saved = localStorage.getItem("mci_timer_left");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.minutes === "number" && typeof parsed.seconds === "number") {
+          return parsed;
+        }
+      } catch (e) {}
+    }
+    return { minutes: 14, seconds: 59 };
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let nextSeconds = prev.seconds - 1;
+        let nextMinutes = prev.minutes;
+        if (nextSeconds < 0) {
+          nextSeconds = 59;
+          nextMinutes = prev.minutes - 1;
+        }
+        if (nextMinutes < 0) {
+          nextMinutes = 14;
+          nextSeconds = 59;
+        }
+        const state = { minutes: nextMinutes, seconds: nextSeconds };
+        localStorage.setItem("mci_timer_left", JSON.stringify(state));
+        return state;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (time: { minutes: number; seconds: number }) => {
+    const m = String(time.minutes).padStart(2, "0");
+    const s = String(time.seconds).padStart(2, "0");
+    return `${m}:${s}`;
+  };
+  
+  // Simulated Reels playback states
+  const [reelsPlaying, setReelsPlaying] = useState(false);
+  const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
+  const [carouselSlideIdx, setCarouselSlideIdx] = useState(0);
+
   // Configurable Checkout URL (Defaults to Kiwify or generic checkout hashtag)
   const [checkoutUrl, setCheckoutUrl] = useState(() => {
     return (import.meta as any).env?.VITE_CHECKOUT_URL || localStorage.getItem("mci_checkout_url") || "https://pay.kiwify.com.br/lVk3ffM";
@@ -126,6 +185,32 @@ export default function App() {
     }
     return () => clearInterval(interval);
   }, [isGenerating]);
+
+  // Simulated Reels script playback
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (reelsPlaying) {
+      const activeCreative = activeSubTab === "library" 
+        ? readyToUseCreatives.find(c => c.id === selectedCreativeId)
+        : generatedAdCreative;
+      
+      const scriptLength = activeCreative?.videoScript?.length || 0;
+      if (scriptLength > 0) {
+        timer = setInterval(() => {
+          setCurrentSceneIdx((prev) => {
+            if (prev >= scriptLength - 1) {
+              setReelsPlaying(false);
+              return 0;
+            }
+            return prev + 1;
+          });
+        }, 4000); // 4 seconds per scene
+      }
+    } else {
+      setCurrentSceneIdx(0);
+    }
+    return () => clearInterval(timer);
+  }, [reelsPlaying, selectedCreativeId, activeSubTab, generatedAdCreative]);
 
   const handleCheckoutSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,11 +329,81 @@ export default function App() {
     : testimonials.filter(t => t.niche === activeTestimonialNiche || (activeTestimonialNiche === "Outros" && !["Marketing Digital", "Saúde & Estética", "E-commerce & Moda"].includes(t.niche)));
 
   return (
-    <div className="min-h-screen bg-[#050508] text-gray-100 font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#050508] text-gray-100 font-sans antialiased overflow-x-hidden relative pb-20">
       
+      {/* PERSISTENT FLOATING VIEW SWITCHER FOR THE USER TO PREVIEW */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] bg-zinc-950/95 border border-zinc-800 p-1.5 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-1">
+        <button
+          onClick={() => setCurrentView("landing")}
+          className={`px-4 py-2 rounded-full text-xs font-black tracking-wide uppercase transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            currentView === "landing"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/15"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Página de Vendas
+        </button>
+        <button
+          onClick={() => setCurrentView("creatives")}
+          className={`px-4 py-2 rounded-full text-xs font-black tracking-wide uppercase transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            currentView === "creatives"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/15"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <Video className="w-3.5 h-3.5 text-blue-400" /> Criativos & Ideias
+        </button>
+        <button
+          onClick={() => setCurrentView("checkout")}
+          className={`px-4 py-2 rounded-full text-xs font-black tracking-wide uppercase transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            currentView === "checkout"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-500/15"
+              : "text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          <CreditCard className="w-3.5 h-3.5 text-blue-400" /> Checkout Kiwify
+        </button>
+      </div>
 
+      {currentView === "checkout" ? (
+        <CheckoutExample />
+      ) : currentView === "creatives" ? (
+        <>
+          {/* HEADER NAVIGATION */}
+          <header className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-zinc-800/50 animate-fade-in">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <Sparkles className="w-5 h-5 text-white animate-pulse" />
+              </div>
+              <div>
+                <span className="font-display font-black text-lg tracking-tight block">
+                  MÉTODO <span className="text-blue-500">CONTEÚDO</span>
+                </span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-purple-400 -mt-1 block">INTELIGENTE</span>
+              </div>
+            </div>
 
-      {/* HEADER NAVIGATION */}
+            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+              <button onClick={() => setCurrentView("landing")} className="transition hover:text-white cursor-pointer bg-transparent border-none">Página de Vendas</button>
+              <button onClick={() => setCurrentView("checkout")} className="transition hover:text-white cursor-pointer bg-transparent border-none">Checkout Exemplo</button>
+            </nav>
+          </header>
+          <CreativesView checkoutUrl={checkoutUrl} setCurrentView={setCurrentView} />
+        </>
+      ) : (
+        <>
+          {/* HIGH CONVERTING TOP BAR WITH TIMER */}
+          <div className="bg-gradient-to-r from-red-600 via-purple-600 to-indigo-600 text-white text-[11px] sm:text-xs font-bold text-center py-2.5 px-4 flex items-center justify-center gap-2 relative z-50 shadow-lg">
+            <Clock className="w-3.5 h-3.5 text-white animate-pulse" />
+            <span>
+              ⚡ <span className="text-yellow-300 font-extrabold uppercase">OFERTA IMPERDÍVEL:</span> Método Completo + <span className="underline decoration-yellow-300 font-extrabold text-white">3 Bônus Exclusivos</span> por apenas R$ 29,90 expira em:
+            </span>
+            <span className="font-mono bg-black/50 px-2 py-0.5 rounded text-yellow-300 border border-yellow-300/30 font-black tracking-wider shadow">
+              {formatTime(timeLeft)}
+            </span>
+          </div>
+
+          {/* HEADER NAVIGATION */}
       <header className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-zinc-800/50">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -272,32 +427,64 @@ export default function App() {
       {/* HERO SECTION */}
       <section className="relative max-w-7xl mx-auto px-6 pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden">
         {/* Background Ambient Glows */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600/10 rounded-full blur-[120px] -z-10" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-600/10 rounded-full blur-[120px] -z-10" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] -z-10" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold tracking-wider uppercase">
-              <Zap className="w-3.5 h-3.5 text-blue-400 animate-bounce" />
-              ⚡ O MÉTODO DE PROMPTS DE COPYS SENIORES
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold tracking-wider uppercase">
+              <Zap className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
+              SISTEMA COMPROVADO DE ENGENHARIA DE PROMPTS DE ELITE
             </div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold leading-[1.1] tracking-tight">
-              Cansado de travar na tela em branco? <span className="text-gradient">Crie 30 dias de conteúdo estratégico em 1 hora.</span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold leading-[1.1] tracking-tight text-white">
+              Pare de Perder Horas Criando Conteúdo. <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">A IA Faz Todo o Trabalho Para Você</span> em Minutos.
             </h1>
             
             <p className="text-lg md:text-xl text-zinc-400 font-light max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              O <strong className="text-white">Método Conteúdo Inteligente</strong> é um sistema pronto de Engenharia de Prompts para empreendedores e profissionais. Ele treina a inteligência artificial para agir como seu Copywriter de Elite. Copie, cole e destrave vendas diretas no direct poupando mais de 20 horas semanais.
+              O método definitivo de Copywriting e Engenharia de Prompts para transformar seu Instagram em uma <strong className="text-white">máquina automática de atração de clientes</strong> — sem precisar gastar horas do seu dia ou sofrer com bloqueio criativo.
             </p>
+
+            {/* DYNAMIC SCARCITY COUNTDOWN & EXCLUSIVE BONUSES HIGHLIGHT */}
+            <div className="bg-purple-950/15 border border-purple-500/30 p-5 rounded-3xl max-w-2xl mx-auto lg:mx-0 space-y-4 shadow-[0_0_30px_rgba(147,51,234,0.08)] text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                  </span>
+                  <span className="text-xs font-black text-red-400 uppercase tracking-widest">Apenas poucas vagas restantes!</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-300">
+                  <Clock className="w-4 h-4 text-purple-400 animate-pulse" />
+                  Tempo restante da oferta: 
+                  <span className="font-mono text-yellow-300 font-black text-sm bg-black/60 px-3 py-1 rounded-xl border border-purple-500/30 shadow-inner">
+                    {formatTime(timeLeft)}
+                  </span>
+                </div>
+              </div>
+              <div className="border-t border-purple-500/10 pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="text-left space-y-1">
+                  <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-widest block w-fit">Incluso Hoje</span>
+                  <p className="text-xs text-zinc-300 font-medium">
+                    Método MCI + <span className="text-white font-extrabold underline decoration-purple-400">3 Bônus Gratuitos</span> <span className="text-purple-400 font-bold">(Biblioteca + Pack + Calendário)</span>
+                  </p>
+                </div>
+                <span className="text-xs bg-emerald-500/15 text-emerald-400 font-mono font-extrabold px-3 py-1 rounded-xl border border-emerald-500/20 shadow">
+                  70% DE DESCONTO ATIVO
+                </span>
+              </div>
+            </div>
             
-            <div className="flex flex-col items-center lg:items-start gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               {isPhotoMode ? (
                 <div 
-                  className="bg-gradient-to-r from-blue-600 to-blue-800 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto text-center select-none shadow-xl shadow-blue-500/10 uppercase tracking-tight"
+                  className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto text-center select-none shadow-xl shadow-purple-500/10"
                   id="hero-buy-btn"
                 >
-                  🚀 QUERO ACESSO IMEDIATO COM BÔNUS
+                  QUERO ACESSO IMEDIATO
                 </div>
               ) : (
                 <>
@@ -305,82 +492,89 @@ export default function App() {
                     href={checkoutUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto inline-block shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition duration-300 text-center cursor-pointer uppercase tracking-tight"
+                    className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 text-white font-display font-extrabold text-lg py-5 px-10 rounded-2xl w-full sm:w-auto inline-block shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30 transform hover:-translate-y-0.5 transition duration-300 text-center cursor-pointer uppercase tracking-wide"
                     id="hero-buy-btn"
                   >
-                    🚀 QUERO ACESSO IMEDIATO COM BÔNUS
+                    ⚡ QUERO ACESSO IMEDIATO
                   </a>
                   
                   <a 
                     href="#como-funciona" 
-                    className="bg-zinc-900 hover:bg-zinc-800 text-white font-medium py-4 px-8 rounded-2xl w-full sm:w-auto border border-zinc-800 hover:border-zinc-700 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
+                    className="bg-zinc-900/80 hover:bg-zinc-800 text-white font-medium py-5 px-8 rounded-2xl w-full sm:w-auto border border-zinc-800 hover:border-zinc-700 transition flex items-center justify-center gap-2 cursor-pointer"
                     id="hero-test-btn"
                   >
-                    Conhecer a Transformação
+                    Conhecer o Método
                   </a>
                 </>
               )}
-              
-              <p className="text-[11px] text-zinc-500 font-semibold mt-1">
-                🔒 Compra 100% segura • ⚡ Acesso imediato • 🛡️ 7 dias de garantia • 🔄 Atualizações inclusas
-              </p>
             </div>
 
-            <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 pt-2 text-xs text-zinc-500 font-medium uppercase tracking-widest">
-              <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-blue-500" /> Acesso Imediato</span>
-              <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-blue-500" /> Pagamento Seguro</span>
-              <span className="flex items-center gap-1.5"><Award className="w-4 h-4 text-blue-500" /> 7 dias de garantia</span>
+            <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 pt-2 text-xs text-zinc-500 font-semibold uppercase tracking-widest">
+              <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-purple-500" /> Acesso Imediato</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-purple-500" /> Pagamento 100% Seguro</span>
+              <span className="flex items-center gap-1.5"><Award className="w-4 h-4 text-purple-500" /> 7 dias de garantia</span>
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative flex justify-center">
+          <div className="lg:col-span-5 relative flex justify-center items-center min-h-[460px] sm:min-h-[500px]">
             {/* Visual Phone Mockup representing App value */}
-            <div className="relative w-full max-w-[340px] aspect-[9/16] bg-zinc-950 rounded-[48px] p-3.5 border-4 border-zinc-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden">
+            <div className="absolute left-0 sm:left-4 bottom-2 w-[210px] sm:w-[240px] aspect-[9/16] bg-zinc-950 rounded-[38px] p-2.5 border-4 border-zinc-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden z-10 transition hover:scale-105 duration-300">
               {/* Phone Speaker Notch */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-zinc-800 rounded-b-2xl z-20 flex items-center justify-center">
-                <div className="w-12 h-1 bg-zinc-900 rounded-full" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-24 bg-zinc-800 rounded-b-xl z-20 flex items-center justify-center">
+                <div className="w-8 h-0.5 bg-zinc-900 rounded-full" />
               </div>
 
               {/* Inner screen content */}
-              <div className="relative h-full w-full bg-[#0a0a10] rounded-[36px] overflow-hidden flex flex-col justify-between p-6">
-                
+              <div className="relative h-full w-full bg-[#0a0a10] rounded-[28px] overflow-hidden flex flex-col justify-between p-4 sm:p-5">
                 {/* Simulated Social Status Header */}
-                <div className="flex justify-between items-center text-[10px] text-zinc-500 font-bold tracking-wider pt-2">
+                <div className="flex justify-between items-center text-[8px] text-zinc-500 font-bold tracking-wider pt-1">
                   <span>9:41</span>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full border border-zinc-600 flex items-center justify-center text-[8px]">5G</div>
-                    <div className="w-4 h-2 bg-emerald-500 rounded-sm" />
+                    <span className="text-[6px]">5G</span>
+                    <div className="w-3 h-1.5 bg-emerald-500 rounded-sm" />
                   </div>
                 </div>
 
                 {/* Cover branding design */}
-                <div className="flex-1 flex flex-col items-center justify-center text-center py-6">
-                  <div className="w-20 h-20 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-[24px] mb-6 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <Sparkles className="w-10 h-10 text-white" />
+                <div className="flex-1 flex flex-col items-center justify-center text-center py-2">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl mb-3 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                   </div>
                   
-                  <span className="text-xs uppercase font-bold tracking-widest text-blue-400">Sistema Premium</span>
-                  <h2 className="text-3xl font-display font-black leading-tight mt-1">
+                  <span className="text-[9px] uppercase font-bold tracking-widest text-blue-400">Sistema Premium</span>
+                  <h2 className="text-base sm:text-lg font-display font-black leading-tight mt-1 text-white">
                     MÉTODO<br />
                     CONTEÚDO<br />
-                    <span className="text-blue-500 text-gradient-gold font-extrabold">INTELIGENTE</span>
+                    <span className="text-blue-500 font-extrabold">INTELIGENTE</span>
                   </h2>
-                  <p className="text-[11px] text-zinc-500 mt-4 max-w-[200px]">
-                    20 Prompts Elite + Calendário 30 Dias + Estrutura Viral de Carrossel
+                  <p className="text-[9px] text-zinc-500 mt-2 max-w-[140px]">
+                    20 Prompts Elite + Calendário 30 Dias + Estrutura Viral
                   </p>
                 </div>
 
                 {/* Quick Stats Mockup */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-3 space-y-2">
-                  <div className="flex justify-between items-center text-[11px]">
-                    <span className="text-zinc-400">Resultados Práticos:</span>
+                <div className="bg-white/5 border border-white/10 rounded-xl p-2 space-y-1">
+                  <div className="flex justify-between items-center text-[9px]">
+                    <span className="text-zinc-400">Resultados:</span>
                     <span className="text-emerald-400 font-bold">+241% alcance</span>
                   </div>
-                  <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
                     <div className="h-full bg-blue-500 rounded-full w-[85%]" />
                   </div>
                 </div>
-                
+              </div>
+            </div>
+
+            {/* Gorgeous Hardcover Ebook Mockup */}
+            <div className="absolute right-0 sm:right-4 top-2 w-[210px] sm:w-[240px] aspect-[3/4] rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden z-20 border border-zinc-800/80 hover:scale-105 transition duration-300 bg-zinc-950">
+              <img 
+                src={ebookCover} 
+                alt="E-book Método Conteúdo Inteligente" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute bottom-3 right-3 bg-indigo-600 text-white font-mono font-black text-[9px] tracking-widest uppercase px-2 py-1 rounded-md shadow-lg select-none">
+                E-BOOK OFICIAL
               </div>
             </div>
 
@@ -405,28 +599,28 @@ export default function App() {
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <Clock className="text-red-400 mb-5 w-9 h-9" />
               <h4 className="font-display font-bold text-lg mb-2 text-white">Horas Perdidas</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Você passa horas olhando para uma tela em branco tentando ter uma ideia, procrastina e acaba não postando nada pelo cansaço.</p>
+              <p className="text-zinc-400 text-sm leading-relaxed">Passa horas olhando para uma tela em branco pensando no que postar, procrastina e acaba não postando nada.</p>
             </div>
 
             <div className="glass-card p-8 rounded-3xl border-none bg-zinc-900/40 relative overflow-hidden group hover:bg-zinc-900/60 transition duration-300">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <Edit3 className="text-red-400 mb-5 w-9 h-9" />
-              <h4 className="font-display font-bold text-lg mb-2 text-white">Textos Invisíveis</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Cria legendas frias ou cheias de conteúdo técnico chato que as pessoas ignoram no feed, sem gerar conexão com o seu público.</p>
+              <h4 className="font-display font-bold text-lg mb-2 text-white">Legendas Frias</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">Cria textos robóticos ou formais demais que não engajam, não retêm a atenção e não geram conexão real.</p>
             </div>
 
             <div className="glass-card p-8 rounded-3xl border-none bg-zinc-900/40 relative overflow-hidden group hover:bg-zinc-900/60 transition duration-300">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <HelpCircle className="text-red-400 mb-5 w-9 h-9" />
-              <h4 className="font-display font-bold text-lg mb-2 text-white">Resultados Artificiais</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Tenta usar o ChatGPT comum e recebe respostas óbvias e artificiais, cheias de emojis bobos que gritam que foram feitos por robô.</p>
+              <h4 className="font-display font-bold text-lg mb-2 text-white">Medo do ChatGPT</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">Tenta usar IA mas recebe respostas genéricas, superficiais e com aquele típico tom "robótico" sem graça.</p>
             </div>
 
             <div className="glass-card p-8 rounded-3xl border-none bg-zinc-900/40 relative overflow-hidden group hover:bg-zinc-900/60 transition duration-300">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500/40" />
               <TrendingUp className="text-red-400 mb-5 w-9 h-9" />
-              <h4 className="font-display font-bold text-lg mb-2 text-white">Zero Clientes na DM</h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">Até posta dicas úteis, mas seu conteúdo atrai apenas curiosos. Ninguém te pergunta o preço do serviço ou compra no direct.</p>
+              <h4 className="font-display font-bold text-lg mb-2 text-white">Zero Clientes</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">Até posta algumas dicas úteis, mas seu conteúdo não gera leads e ninguém te pergunta o preço do serviço no Direct.</p>
             </div>
           </div>
         </div>
@@ -437,7 +631,7 @@ export default function App() {
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-20">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-500">O Segredo Revelado</span>
           <h2 className="text-3xl sm:text-5xl font-display font-extrabold italic">Os 3 Pilares do Método Conteúdo Inteligente</h2>
-          <p className="text-zinc-400 text-base sm:text-lg">Diga adeus ao bloqueio criativo e crie posts estratégicos como um copywriter profissional em tempo recorde.</p>
+          <p className="text-zinc-400 text-base sm:text-lg">Diga adeus ao bloqueio criativo e crie posts como um copywriter profissional em tempo recorde.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -447,14 +641,14 @@ export default function App() {
             <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-400 font-bold border border-blue-500/20">
               01
             </div>
-            <h3 className="text-2xl font-display font-extrabold text-white">Atração de Compradores</h3>
+            <h3 className="text-2xl font-display font-extrabold text-white">Estratégia de Conversão</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Pare de postar aleatoriedades sobre seu dia a dia. Você usará um funil de venda direta que desperta o desejo de compra nas dores profundas do cliente. Cada post guiará o leitor a levantar a mão no direct querendo seu produto ou serviço.
+              Chega de posts aleatórios sobre "o que eu fiz hoje". O método foca estritamente em funis de conteúdo baseados nas dores do seu cliente ideal. Cada post tem o objetivo claro de levantar a mão e vender.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Atração automática de leads prontos para pagar</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Quebra antecipada de objeções de preço</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Chamadas sutis e irresistíveis para a DM</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Atração de Leads qualificados</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Quebra antecipada de objeções</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> CTAs agressivas invisíveis</li>
             </ul>
           </div>
 
@@ -463,14 +657,14 @@ export default function App() {
             <div className="w-12 h-12 bg-purple-600/10 rounded-2xl flex items-center justify-center text-purple-400 font-bold border border-purple-500/20">
               02
             </div>
-            <h3 className="text-2xl font-display font-extrabold text-white">Escrita Magnética Humana</h3>
+            <h3 className="text-2xl font-display font-extrabold text-white">Engenharia de Prompts</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Diga adeus a textos robóticos. Nosso sistema de prompts avançados ensina a inteligência artificial a ler a mente do seu público, usando gatilhos emocionais da redação publicitária (copywriting) em parágrafos dinâmicos.
+              O ChatGPT só te dá textos ruins porque você dá comandos ruins. O Método entrega prompts profissionais estruturados que ensinam a IA a pensar, adotar persona de copywriter de elite, usar técnicas como AIDA e PAS.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Tom de voz 100% natural, empático e fluído</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Legendas curtas e escaneáveis no celular</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Ganchos impossíveis de ignorar no scroll</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Tom de voz 100% humano</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Formatação escaneável nativa</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400" /> Textos que geram identificação</li>
             </ul>
           </div>
 
@@ -479,145 +673,165 @@ export default function App() {
             <div className="w-12 h-12 bg-pink-600/10 rounded-2xl flex items-center justify-center text-pink-400 font-bold border border-pink-500/20">
               03
             </div>
-            <h3 className="text-2xl font-display font-extrabold text-white">Liberdade de Tempo</h3>
+            <h3 className="text-2xl font-display font-extrabold text-white">Consistência Blindada</h3>
             <p className="text-zinc-400 text-sm leading-relaxed">
-              Recupere a paz nos seus fins de semana. Com nosso calendário de funil estratégico e planejamento rápido de prompts, você criará e agendará todo o seu estoque de conteúdo estratégico para 30 dias em apenas 1 hora.
+              O segredo para crescer nas redes sociais é a consistência. Com nosso calendário automatizado e prompts de planejamento ágil, você consegue sentar, criar todo o seu estoque estratégico do mês e agendar tudo em apenas 1 hora.
             </p>
             <ul className="space-y-2 text-xs text-zinc-300 pt-2">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Fim definitivo da ansiedade do post de última hora</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Menos desgaste mental e muito mais faturamento</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Perfil vendendo de domingo a domingo no automático</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Fim do desespero de última hora</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Menos estresse, mais vendas</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-pink-400" /> Perfil ativo de domingo a domingo</li>
             </ul>
           </div>
+
         </div>
       </section>
 
-      {/* DELIVERABLES & WHAT'S INCLUDED SECTION */}
+      {/* DELIVERABLES & WHAT'S INCLUDED SECTION - 8 POWER CORES FOR MASSIVE PERCEIVED VALUE */}
       <section className="py-24 max-w-6xl mx-auto px-6">
-        <div className="text-center space-y-4 mb-20">
-          <span className="text-xs font-bold uppercase tracking-widest text-blue-500">Conteúdo do Produto</span>
-          <h2 className="text-3xl sm:text-5xl font-display font-extrabold italic">O que você vai receber no Método Completo:</h2>
-          <div className="w-20 h-1 bg-blue-500/50 mx-auto rounded-full" />
+        <div className="text-center space-y-4 mb-16">
+          <span className="text-xs font-bold uppercase tracking-widest text-purple-500">A Solução Definitiva</span>
+          <h2 className="text-3xl sm:text-5xl font-display font-extrabold italic text-white">O Sistema Completo Que Você Vai Receber Hoje:</h2>
+          <p className="text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+            Esqueça materiais superficiais. O Método Conteúdo Inteligente é uma estrutura integrada e profissional de vendas que coloca o seu perfil em outro nível.
+          </p>
+          <div className="w-20 h-1 bg-purple-500/50 mx-auto rounded-full" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
-            <span className="text-3xl">📘</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-blue-400 block">Manual do Comportamento</span>
-            <h3 className="font-display font-extrabold text-base text-white">Guia Prático de Copywriting</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Aprenda a psicologia humana de consumo por trás de posts que fazem o cliente abrir a carteira e comprar.</p>
-          </div>
-
-          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
-            <span className="text-3xl">🧠</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">Bibliotecas Master</span>
-            <h3 className="font-display font-extrabold text-base text-white">20 Prompts Elite Inéditos</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Copie e cole os comandos secretos que instruem a inteligência artificial a agir como redator profissional sênior.</p>
-          </div>
-
-          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
-            <span className="text-3xl">📅</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-pink-400 block">Organização Completa</span>
-            <h3 className="font-display font-extrabold text-base text-white">Calendário de Funil (30 Dias)</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Chega de ter ideias no dia. 30 dias de linha editorial classificada e mapeada para aquecer seguidores frios.</p>
-          </div>
-
-          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300">
-            <span className="text-3xl">🎥</span>
-            <span className="font-bold uppercase text-[10px] tracking-widest text-emerald-400 block">Atenção Extrema</span>
-            <h3 className="font-display font-extrabold text-base text-white">Roteiros de Reels e Carrossel</h3>
-            <p className="text-zinc-400 text-xs leading-relaxed">Ganchos magnéticos falados e transições pensadas para reter e direcionar as pessoas direto para a compra.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* EXCLUSIVE BONUSES SECTION */}
-      <section className="py-24 bg-[#050508] border-t border-zinc-900">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center space-y-4 mb-20">
-            <span className="text-xs font-bold uppercase tracking-widest text-purple-400">Oferta Exclusiva</span>
-            <h2 className="text-3xl sm:text-5xl font-display font-extrabold italic">Leve esses 4 Bônus Secretos Gratuitamente:</h2>
-            <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto">
-              Ao garantir sua licença hoje, você leva um pacote completo de ferramentas de aceleração comerciais que custariam mais de R$ 240 reais separadamente.
+          {/* Pillar 1: Método Completo */}
+          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 text-purple-400 font-bold">
+              <BookOpen className="w-5 h-5 text-purple-400" />
+            </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">✔ Método Completo</span>
+            <h3 className="font-display font-extrabold text-base text-white">Manual do Funil de Alta Conversão</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              O exato passo a passo estratégico e psicológico para entender os desejos profundos do seu comprador e estruturar um perfil de alto valor.
             </p>
-            <div className="w-20 h-1 bg-purple-500/50 mx-auto rounded-full" />
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-purple-400 font-mono">Incluso</span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Bonus 1 */}
-            <div className="glass-card p-8 rounded-[32px] border border-blue-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-blue-500/40 transition duration-300">
-              <div className="absolute top-4 right-4 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] font-bold px-3 py-1 rounded-full">
-                VALOR: R$ 97,00
-              </div>
-              <div className="space-y-4">
-                <span className="text-4xl">🤖</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-blue-400 block">Super Bônus 01</span>
-                <h3 className="text-2xl font-display font-extrabold text-white">Script Secreto de Vendas por Direct</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  O exato passo a passo estratégico para configurar automações no Direct (ManyChat). Faça seu celular apitar com vendas automáticas sempre que comentarem no seu post, convertendo de forma humanizada.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
-                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
-                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
-              </div>
+          {/* Pillar 2: Biblioteca Premium */}
+          <div className="glass-card p-6 bg-purple-950/10 hover:bg-purple-950/20 border border-purple-500/30 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden shadow-[0_0_30px_rgba(147,51,234,0.05)]">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition" />
+            <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/40 text-purple-300 font-bold">
+              <Award className="w-5 h-5 text-purple-300 animate-pulse" />
             </div>
-
-            {/* Bonus 2 */}
-            <div className="glass-card p-8 rounded-[32px] border border-purple-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-purple-500/40 transition duration-300">
-              <div className="absolute top-4 right-4 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[10px] font-bold px-3 py-1 rounded-full">
-                VALOR: R$ 47,00
-              </div>
-              <div className="space-y-4">
-                <span className="text-4xl">🎯</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-purple-400 block">Super Bônus 02</span>
-                <h3 className="text-2xl font-display font-extrabold text-white">50 Prompts Secretos para Anúncios (Meta Ads)</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  Copies e roteiros de anúncios patrocinados prontos para rodar. Crie criativos de alta retenção no Instagram e Facebook, economizando dinheiro em testes e indo direto na copy validada.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
-                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
-                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
-              </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block flex items-center gap-1">🎁 Bônus 1 (Gratuito)</span>
+            <h3 className="font-display font-extrabold text-base text-white">Biblioteca Premium de Prompts</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Modelos de ganchos virais e comandos refinados para forçar o usuário a parar o scroll do feed e ler o seu post até o final.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-emerald-400 font-mono font-bold">R$ 197,00 (Grátis)</span>
             </div>
+          </div>
 
-            {/* Bonus 3 */}
-            <div className="glass-card p-8 rounded-[32px] border border-pink-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-pink-500/40 transition duration-300">
-              <div className="absolute top-4 right-4 bg-pink-500/10 border border-pink-500/30 text-pink-400 text-[10px] font-bold px-3 py-1 rounded-full">
-                VALOR: R$ 67,00
-              </div>
-              <div className="space-y-4">
-                <span className="text-4xl">📅</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-pink-400 block">Super Bônus 03</span>
-                <h3 className="text-2xl font-display font-extrabold text-white">Calendário Editorial de 365 Dias</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  Nunca mais trave sem saber o que postar. Tenha em mãos a linha mestra para o ano inteiro, mapeando de forma antecipada as dores do seu cliente ideal para datas comemorativas e picos sazonais do mercado.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
-                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
-                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
-              </div>
+          {/* Pillar 3: Prompts */}
+          <div className="glass-card p-6 bg-purple-950/10 hover:bg-purple-950/20 border border-purple-500/30 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden shadow-[0_0_30px_rgba(147,51,234,0.05)]">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition" />
+            <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/40 text-purple-300 font-bold">
+              <Zap className="w-5 h-5 text-purple-300 animate-pulse" />
             </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block flex items-center gap-1">🎁 Bônus 2 (Gratuito)</span>
+            <h3 className="font-display font-extrabold text-base text-white">Pack Premium de Prompts de Alta Conversão</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Comandos de elite prontos para copiar e colar que fazem a inteligência artificial adotar o tom de voz humano de um copywriter profissional.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-emerald-400 font-mono font-bold">R$ 297,00 (Grátis)</span>
+            </div>
+          </div>
 
-            {/* Bonus 4 */}
-            <div className="glass-card p-8 rounded-[32px] border border-emerald-500/20 bg-zinc-950/60 relative overflow-hidden flex flex-col justify-between group hover:border-emerald-500/40 transition duration-300">
-              <div className="absolute top-4 right-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full">
-                VALOR: R$ 37,00
-              </div>
-              <div className="space-y-4">
-                <span className="text-4xl">👥</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 block">Super Bônus 04</span>
-                <h3 className="text-2xl font-display font-extrabold text-white">Grupo Silencioso de Atualizações</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
-                  O algoritmo do Instagram e a inteligência artificial atualizam constantemente. Com esse grupo silencioso, você receberá novos prompts adaptados às novas diretrizes, sem spam ou chat paralelo.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-zinc-900 flex justify-between items-center">
-                <span className="text-[10px] text-zinc-500 uppercase font-black">Apenas Hoje</span>
-                <span className="text-emerald-400 text-sm font-black uppercase">Grátis</span>
-              </div>
+          {/* Pillar 4: Atualizações */}
+          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 text-purple-400 font-bold">
+              <RefreshCw className="w-5 h-5 text-purple-400" />
+            </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">✔ Atualizações</span>
+            <h3 className="font-display font-extrabold text-base text-white">Upgrade de Inteligência</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Acesso garantido a todos os novos prompts estratégicos, modificações e aditivos à área de membros sem pagar nada a mais.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-purple-400 font-mono">Incluso</span>
+            </div>
+          </div>
+
+          {/* Pillar 5: Templates */}
+          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 text-purple-400 font-bold">
+              <Layers className="w-5 h-5 text-purple-400" />
+            </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">✔ Templates</span>
+            <h3 className="font-display font-extrabold text-base text-white">Modelos Prontos Escaneáveis</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Esqueça blocos maciços de texto. Entenda como formatar seus textos com quebra de linha visual para atrair cliques e segurar a leitura dos seguidores.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-purple-400 font-mono">Incluso</span>
+            </div>
+          </div>
+
+          {/* Pillar 6: Calendário */}
+          <div className="glass-card p-6 bg-purple-950/10 hover:bg-purple-950/20 border border-purple-500/30 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden shadow-[0_0_30px_rgba(147,51,234,0.05)]">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition" />
+            <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/40 text-purple-300 font-bold">
+              <Calendar className="w-5 h-5 text-purple-300 animate-pulse" />
+            </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block flex items-center gap-1">🎁 Bônus 3 (Gratuito)</span>
+            <h3 className="font-display font-extrabold text-base text-white">Calendário Inteligente de 365 Dias</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Um cronograma mapeado estratégico anual completo com o tipo exato de post e intenção para publicar o ano inteiro sem sofrimento ou bloqueio criativo.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-emerald-400 font-mono font-bold">R$ 147,00 (Grátis)</span>
+            </div>
+          </div>
+
+          {/* Pillar 7: IA Pronta */}
+          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 text-purple-400 font-bold">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+            </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">✔ IA Pronta</span>
+            <h3 className="font-display font-extrabold text-base text-white">Gerador Inteligente Integrado</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Sua máquina interna de conteúdo. Use o gerador interativo em nosso painel de forma 100% gratuita para criar ideias e rascunhos sem custo adicional.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-purple-400 font-mono">Incluso</span>
+            </div>
+          </div>
+
+          {/* Pillar 8: Suporte */}
+          <div className="glass-card p-6 bg-zinc-900/30 hover:bg-zinc-900/50 border border-zinc-800/60 rounded-[24px] space-y-4 transition duration-300 relative group overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+            <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 text-purple-400 font-bold">
+              <MessageSquare className="w-5 h-5 text-purple-400" />
+            </div>
+            <span className="font-bold uppercase text-[10px] tracking-widest text-purple-400 block">✔ Suporte VIP</span>
+            <h3 className="font-display font-extrabold text-base text-white">Suporte ao Aluno Confiável</h3>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              Nunca fique com dúvidas. Canal exclusivo direto de suporte ao aluno na área de membros para analisar suas estratégias de conteúdo e acelerar suas conversões.
+            </p>
+            <div className="text-[10px] text-zinc-500 font-bold flex justify-between items-center pt-2 border-t border-zinc-900">
+              <span>Valor individual:</span>
+              <span className="text-purple-400 font-mono">Incluso</span>
             </div>
           </div>
         </div>
@@ -626,19 +840,10 @@ export default function App() {
       {/* DETAILED RESULTS & TESTIMONIALS */}
       <section id="depoimentos" className="py-24 bg-[#08080c] border-y border-zinc-900">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16">
             <div className="space-y-4 text-center lg:text-left">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-500">Resultados Reais Comprovados</span>
-              <h2 className="text-3xl sm:text-4xl font-display font-extrabold italic">Quem colocou em prática os prompts do Método:</h2>
-              
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mt-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-2xl w-fit mx-auto lg:mx-0">
-                <div className="flex -space-x-2">
-                  <img className="w-7 h-7 rounded-full border-2 border-zinc-950 object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150" alt="aluno" />
-                  <img className="w-7 h-7 rounded-full border-2 border-zinc-950 object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150" alt="aluno" />
-                  <img className="w-7 h-7 rounded-full border-2 border-zinc-950 object-cover" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=150&h=150" alt="aluno" />
-                </div>
-                <span className="text-xs font-bold text-emerald-400">Mais de 1.450 alunos faturando e economizando tempo com o Método</span>
-              </div>
+              <span className="text-xs font-bold uppercase tracking-widest text-purple-500">Histórias Reais de Crescimento</span>
+              <h2 className="text-3xl sm:text-4xl font-display font-extrabold italic text-white">Quem já usou o Método Conteúdo Inteligente aprovou:</h2>
             </div>
 
             {/* Testimonial Filter Buttons */}
@@ -650,7 +855,7 @@ export default function App() {
                     onClick={() => setActiveTestimonialNiche(niche)}
                     className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
                       activeTestimonialNiche === niche
-                        ? "bg-blue-600 text-white shadow"
+                        ? "bg-purple-600 text-white shadow"
                         : "text-zinc-400 hover:text-white"
                     }`}
                   >
@@ -671,7 +876,7 @@ export default function App() {
                       <img 
                         src={t.avatar} 
                         alt={t.name}
-                        className="w-12 h-12 rounded-full object-cover border-2 border-blue-500/30" 
+                        className="w-12 h-12 rounded-full object-cover border-2 border-purple-500/30" 
                       />
                       <div>
                         <h4 className="font-bold text-white text-sm">{t.name}</h4>
@@ -683,34 +888,14 @@ export default function App() {
                       {t.metric}
                     </span>
                   </div>
-
-                  {/* 5-Star Rating */}
-                  <div className="flex items-center gap-0.5 text-amber-400 text-xs">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                  </div>
-
                   <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed italic">
                     "{t.content}"
                   </p>
-
-                  {/* Before & After comparison */}
-                  {(t.before && t.after) && (
-                    <div className="mt-4 p-3 bg-zinc-950/80 rounded-2xl border border-zinc-800/50 space-y-2 text-xs">
-                      <div className="flex items-start gap-2">
-                        <span className="text-red-400 font-bold uppercase tracking-wider shrink-0 bg-red-400/10 px-1.5 py-0.5 rounded text-[9px]">Antes</span>
-                        <span className="text-zinc-400">{t.before}</span>
-                      </div>
-                      <div className="flex items-start gap-2 border-t border-zinc-900 pt-2">
-                        <span className="text-emerald-400 font-bold uppercase tracking-wider shrink-0 bg-emerald-400/10 px-1.5 py-0.5 rounded text-[9px]">Depois</span>
-                        <span className="text-zinc-200 font-semibold">{t.after}</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 <div className="border-t border-zinc-900 pt-4 mt-6 flex justify-between items-center text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
                   <span>Nicho: <strong className="text-zinc-400">{t.niche}</strong></span>
-                  <span className="flex items-center gap-1 text-blue-500"><CheckCircle2 className="w-3.5 h-3.5" /> Aluno Verificado</span>
+                  <span className="flex items-center gap-1 text-purple-500"><CheckCircle2 className="w-3.5 h-3.5" /> Aluno Verificado</span>
                 </div>
               </div>
             ))}
@@ -718,13 +903,191 @@ export default function App() {
         </div>
       </section>
 
+      {/* EXCLUSIVE BONUSES VISUAL SHOWCASE */}
+      <section id="bonus-exclusivos" className="py-24 bg-gradient-to-b from-[#030306] via-[#0d091e] to-[#030306] border-y border-purple-900/30 overflow-hidden relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl pointer-events-none -z-10" />
+        
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center space-y-4 mb-16">
+            <span className="inline-flex items-center gap-1.5 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest animate-pulse">
+              🎁 Bônus Exclusivos Limitados
+            </span>
+            <h2 className="text-3xl sm:text-5xl font-display font-black text-white italic tracking-tight">
+              Adquira Hoje e Ganhe <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent underline decoration-amber-400">3 Super Bônus Grátis</span>
+            </h2>
+            <p className="text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+              Você não receberá apenas o método principal. Se inscrevendo agora, você ganha acesso imediato ao nosso arsenal completo de ferramentas de conversão acelerada.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Visual covers mockup */}
+            <div className="lg:col-span-5 flex justify-center relative mb-12 lg:mb-0">
+              <div className="relative w-full max-w-[340px] aspect-[4/5] sm:max-w-[400px]">
+                {/* Background glowing circle */}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl -z-10 animate-pulse" />
+                
+                {/* Bonus 3: Calendário Inteligente */}
+                <div className="absolute left-[-20px] bottom-4 w-[180px] sm:w-[220px] aspect-[3/4] bg-zinc-950 rounded-2xl border border-pink-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-4 sm:p-5 flex flex-col justify-between transform -rotate-12 hover:rotate-0 hover:scale-105 hover:z-30 transition duration-500 cursor-pointer group">
+                  <div className="flex justify-between items-start">
+                    <div className="w-8 h-8 bg-pink-500/10 rounded-lg flex items-center justify-center border border-pink-500/20 text-pink-400">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <span className="text-[8px] font-black bg-pink-500/20 text-pink-400 px-2 py-0.5 rounded-full">BÔNUS 3</span>
+                  </div>
+                  <div className="space-y-1.5 my-4">
+                    <h4 className="text-xs sm:text-sm font-display font-black text-white leading-tight">Calendário Inteligente 365 Dias</h4>
+                    <p className="text-[9px] text-zinc-400">Ideias diárias mapeadas para postar o ano todo sem bloqueio criativo.</p>
+                  </div>
+                  <div className="flex justify-between items-center border-t border-zinc-900 pt-2">
+                    <span className="text-[8px] text-zinc-500 font-bold uppercase">VALOR: <span className="line-through text-zinc-500">R$ 147</span></span>
+                    <span className="text-[9px] text-emerald-400 font-black">GRÁTIS</span>
+                  </div>
+                </div>
+
+                {/* Bonus 2: Pack Premium de Prompts */}
+                <div className="absolute right-[-20px] bottom-8 w-[180px] sm:w-[220px] aspect-[3/4] bg-zinc-950 rounded-2xl border border-indigo-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-4 sm:p-5 flex flex-col justify-between transform rotate-12 hover:rotate-0 hover:scale-105 hover:z-30 transition duration-500 cursor-pointer group">
+                  <div className="flex justify-between items-start">
+                    <div className="w-8 h-8 bg-indigo-500/10 rounded-lg flex items-center justify-center border border-indigo-500/20 text-indigo-400">
+                      <Zap className="w-4 h-4" />
+                    </div>
+                    <span className="text-[8px] font-black bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full">BÔNUS 2</span>
+                  </div>
+                  <div className="space-y-1.5 my-4">
+                    <h4 className="text-xs sm:text-sm font-display font-black text-white leading-tight">Pack Premium de Prompts</h4>
+                    <p className="text-[9px] text-zinc-400">Comandos refinados que imitam a escrita humana de um copywriter.</p>
+                  </div>
+                  <div className="flex justify-between items-center border-t border-zinc-900 pt-2">
+                    <span className="text-[8px] text-zinc-500 font-bold uppercase">VALOR: <span className="line-through text-zinc-500">R$ 297</span></span>
+                    <span className="text-[9px] text-emerald-400 font-black">GRÁTIS</span>
+                  </div>
+                </div>
+
+                {/* Bonus 1: Biblioteca Premium de Prompts (Main / Front book cover) */}
+                <div className="absolute left-[15%] top-0 w-[200px] sm:w-[240px] aspect-[3/4] rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden z-20 border-2 border-purple-500/50 hover:scale-105 hover:border-purple-400 transition duration-300 bg-zinc-950 group cursor-pointer">
+                  <img 
+                    src={ebookCover} 
+                    alt="Bônus 1 – Biblioteca Premium de Prompts" 
+                    className="w-full h-full object-cover group-hover:opacity-90 transition"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-4">
+                    <span className="text-[8px] font-extrabold bg-purple-500 text-white w-fit px-2.5 py-0.5 rounded-full mb-1 uppercase tracking-wider">BÔNUS 1 INCLUSO</span>
+                    <h3 className="text-xs sm:text-sm font-display font-black text-white tracking-tight">Biblioteca Premium de Prompts</h3>
+                    <p className="text-[9px] text-zinc-300 leading-normal mt-0.5">Ganchos, Copys e Linhas Editoriais</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* List and descriptions of the bonuses */}
+            <div className="lg:col-span-7 space-y-6">
+              
+              {/* Bonus 1 Card */}
+              <div className="bg-zinc-950/60 hover:bg-zinc-900/40 border border-purple-500/20 hover:border-purple-500/40 rounded-3xl p-6 transition duration-300 relative group overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/30 rounded-2xl flex items-center justify-center text-purple-400 shrink-0 shadow-lg">
+                    <Award className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1">🎁 Bônus 1 — 100% Grátis</span>
+                      <span className="text-xs text-zinc-500 line-through">Valor Original: R$ 197</span>
+                    </div>
+                    <h3 className="text-lg font-display font-black text-white">Bônus 1 – Biblioteca Premium de Prompts</h3>
+                    <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                      Modelos de ganchos virais estruturados, copys de alto impacto e linhas editoriais magnéticas. Desenvolvido estrategicamente para forçar qualquer usuário a parar o scroll e consumir todo o seu conteúdo.
+                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold pt-1">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      Acesso Vitalício Incluso na sua Área de Membros
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bonus 2 Card */}
+              <div className="bg-zinc-950/60 hover:bg-zinc-900/40 border border-purple-500/20 hover:border-purple-500/40 rounded-3xl p-6 transition duration-300 relative group overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="w-12 h-12 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-400 shrink-0 shadow-lg">
+                    <Zap className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1">🎁 Bônus 2 — 100% Grátis</span>
+                      <span className="text-xs text-zinc-500 line-through">Valor Original: R$ 297</span>
+                    </div>
+                    <h3 className="text-lg font-display font-black text-white">Bônus 2 – Pack Premium de Prompts de Alta Conversão</h3>
+                    <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                      Esqueça respostas genéricas e robóticas do ChatGPT. Comandos refinados e profundos de nível agência que forçam as inteligências artificiais a adotarem um tom de voz incrivelmente humano, persuasivo e empático.
+                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold pt-1">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      Gere posts e carrosséis completos em menos de 2 minutos
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bonus 3 Card */}
+              <div className="bg-zinc-950/60 hover:bg-zinc-900/40 border border-purple-500/20 hover:border-purple-500/40 rounded-3xl p-6 transition duration-300 relative group overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition" />
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="w-12 h-12 bg-pink-500/10 border border-pink-500/30 rounded-2xl flex items-center justify-center text-pink-400 shrink-0 shadow-lg">
+                    <Calendar className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest flex items-center gap-1">🎁 Bônus 3 — 100% Grátis</span>
+                      <span className="text-xs text-zinc-500 line-through">Valor Original: R$ 147</span>
+                    </div>
+                    <h3 className="text-lg font-display font-black text-white">Bônus 3 – Calendário Inteligente de 365 Dias</h3>
+                    <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                      Sua dose diária de inspiração estratégica e produtividade infinita. Um cronograma completo anual com sugestões, intenção de funil de conteúdo e temas ideais para o seu nicho publicar o ano todo sem cansar.
+                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold pt-1">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      Selecione ideias para qualquer dia do ano em segundos
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Direct Link to CTA Offer */}
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-zinc-900">
+                <div>
+                  <span className="text-zinc-500 text-[10px] sm:text-xs font-bold block uppercase">Valor total acumulado em bônus:</span>
+                  <span className="text-red-400 line-through text-base sm:text-lg font-black">R$ 641,00 em Brindes</span>
+                </div>
+                {isPhotoMode ? (
+                  <div className="bg-emerald-600 text-white font-display font-extrabold text-sm py-3.5 px-6 rounded-xl cursor-pointer">
+                    GARANTIR OS BÔNUS GRATUITOS
+                  </div>
+                ) : (
+                  <a 
+                    href="#oferta" 
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-display font-black text-sm py-3.5 px-6 rounded-xl hover:shadow-lg hover:shadow-emerald-500/10 transition inline-flex items-center gap-2 cursor-pointer uppercase tracking-wider"
+                  >
+                    🚀 GARANTIR OS BÔNUS GRATUITOS
+                  </a>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* THE PROMISE & GUARANTEE */}
       <section className="py-24 max-w-4xl mx-auto px-6 text-center">
-        <div className="bg-gradient-to-b from-[#0e0e1a] to-zinc-950 border border-blue-500/20 rounded-[40px] p-8 sm:p-14 space-y-6 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+        <div className="bg-gradient-to-b from-[#0e0e1a] to-zinc-950 border border-purple-500/20 rounded-[40px] p-8 sm:p-14 space-y-6 relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500" />
           
-          <div className="w-20 h-20 mx-auto bg-blue-600/10 rounded-full flex items-center justify-center border-2 border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.15)] animate-pulse">
-            <ShieldCheck className="text-blue-500 w-10 h-10" />
+          <div className="w-20 h-20 mx-auto bg-purple-600/10 rounded-full flex items-center justify-center border-2 border-purple-500/30 shadow-[0_0_30px_rgba(147,51,234,0.15)] animate-pulse">
+            <ShieldCheck className="text-purple-500 w-10 h-10" />
           </div>
           
           <h3 className="text-2xl sm:text-4xl font-display font-black text-white italic">
@@ -745,62 +1108,105 @@ export default function App() {
       {/* FINAL OFFER SECTION */}
       <section id="oferta" className="py-24 bg-[#030306] border-t border-zinc-900 flex justify-center">
         <div className="max-w-2xl w-full px-6">
-          <div className="glass-card p-8 sm:p-12 lg:p-16 border-2 border-blue-600 rounded-[40px] shadow-[0_0_80px_rgba(37,99,235,0.15)] text-center relative overflow-hidden">
-            <div className="absolute -top-12 -left-12 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl" />
+          <div className="glass-card p-8 sm:p-12 lg:p-16 border-2 border-purple-600 rounded-[40px] shadow-[0_0_80px_rgba(147,51,234,0.15)] text-center relative overflow-hidden">
+            <div className="absolute -top-12 -left-12 w-32 h-32 bg-purple-600/10 rounded-full blur-2xl" />
             
-            <span className="inline-block bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6">
+            <span className="inline-block bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 animate-pulse">
               ⚡ Oferta Especial por Tempo Limitado
             </span>
 
-            <h2 className="text-2xl sm:text-4xl font-display font-black mb-6 text-white tracking-tight">
-              MÉTODO CONTEÚDO INTELIGENTE + 4 SUPER BÔNUS
+            <h2 className="text-2xl sm:text-4xl font-display font-black mb-4 text-white tracking-tight">
+              MÉTODO CONTEÚDO INTELIGENTE
             </h2>
-            
-            <div className="mb-8 space-y-3">
-              <div className="text-zinc-400 text-xs sm:text-sm space-y-1.5 max-w-md mx-auto bg-zinc-950/60 p-5 rounded-2xl border border-zinc-900 mb-6 text-left">
-                <div className="flex justify-between"><span>Guia de Prompts de Elite:</span><span className="line-through">R$ 97,00</span></div>
-                <div className="flex justify-between"><span>Bônus 1: Script Direct (ManyChat):</span><span className="line-through">R$ 97,00</span></div>
-                <div className="flex justify-between"><span>Bônus 2: 50 Prompts Anúncios (Patrocinado):</span><span className="line-through">R$ 47,00</span></div>
-                <div className="flex justify-between"><span>Bônus 3: Calendário 365 Dias:</span><span className="line-through">R$ 67,00</span></div>
-                <div className="flex justify-between border-b border-zinc-800 pb-2.5"><span>Bônus 4: Grupo VIP Algoritmo:</span><span className="line-through">R$ 37,00</span></div>
-                <div className="flex justify-between font-bold text-white pt-2 text-sm"><span>Valor Total Real:</span><span className="line-through text-red-500">R$ 345,00</span></div>
+
+            {/* COUNTDOWN TIMER IN THE FINAL OFFER CARD */}
+            <div className="bg-zinc-950/80 border border-zinc-800/80 rounded-[20px] p-4 mb-6 max-w-md mx-auto flex items-center justify-between gap-4">
+              <div className="text-left">
+                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest block text-left">O desconto expira em:</span>
+                <span className="text-xs font-extrabold text-red-400 block text-left">Última oportunidade disponível</span>
               </div>
+              <div className="flex gap-2">
+                <div className="flex flex-col items-center">
+                  <div className="bg-purple-950/40 border border-purple-500/30 rounded-xl px-2.5 py-1 text-base sm:text-lg font-mono font-black text-white">
+                    {String(timeLeft.minutes).padStart(2, "0")}
+                  </div>
+                  <span className="text-[7px] text-zinc-500 font-bold uppercase mt-1">Minutos</span>
+                </div>
+                <div className="text-lg font-mono font-black text-purple-500 self-center -mt-4">:</div>
+                <div className="flex flex-col items-center">
+                  <div className="bg-purple-950/40 border border-purple-500/30 rounded-xl px-2.5 py-1 text-base sm:text-lg font-mono font-black text-white">
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </div>
+                  <span className="text-[7px] text-zinc-500 font-bold uppercase mt-1">Segundos</span>
+                </div>
+              </div>
+            </div>
+
+            {/* DETAILED BONUSES CHECKLIST INSIDE FINAL OFFER CARD */}
+            <div className="text-left bg-zinc-950/40 border border-zinc-900/80 rounded-3xl p-4 sm:p-5 mb-6 space-y-3.5">
+              <h4 className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest border-b border-zinc-900 pb-1.5">O QUE VOCÊ VAI RECEBER HOJE:</h4>
+              <ul className="space-y-2.5">
+                <li className="flex items-start gap-2 text-xs text-zinc-300">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>Acesso vitalício ao <strong>Método Conteúdo Inteligente</strong> <span className="text-zinc-500 text-[10px]">(R$ 97,00)</span></span>
+                </li>
+                <li className="flex items-start gap-2 text-xs text-purple-200">
+                  <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block">Bônus 1 – Biblioteca Premium de Prompts</span>
+                    <span className="text-zinc-500 text-[10px]">Modelos de ganchos virais e roteiros de cópia. <span className="text-emerald-400 font-bold font-mono">Grátis hoje</span></span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2 text-xs text-purple-200">
+                  <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block">Bônus 2 – Pack Premium de Prompts de Alta Conversão</span>
+                    <span className="text-zinc-500 text-[10px]">Comandos profissionais prontos para usar. <span className="text-emerald-400 font-bold font-mono">Grátis hoje</span></span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2 text-xs text-purple-200">
+                  <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block">Bônus 3 – Calendário Inteligente de 365 Dias</span>
+                    <span className="text-zinc-500 text-[10px]">Cronograma anual completo de ideias. <span className="text-emerald-400 font-bold font-mono">Grátis hoje</span></span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="mb-6 space-y-2">
+              <p className="text-zinc-500 line-through text-base sm:text-lg font-bold">De R$ 97,00</p>
               
-              <p className="text-zinc-400 font-medium text-base sm:text-lg mb-2">Leve tudo hoje por apenas</p>
-              <div className="flex items-end justify-center gap-2">
-                <span className="text-2xl sm:text-3xl font-black text-white mb-2">R$</span>
-                <div className="text-7xl sm:text-9xl font-black text-white tracking-tighter leading-none">
-                  29<span className="text-3xl sm:text-4xl">,90</span>
+              <div className="flex items-center justify-center">
+                <span className="text-lg sm:text-xl text-zinc-400 font-medium mr-2">Apenas</span>
+                <div className="text-5xl sm:text-7xl font-black text-white tracking-tighter">
+                  R$ 29<span className="text-xl sm:text-2xl">,90</span>
                 </div>
               </div>
               
-              <p className="text-emerald-400 font-black tracking-widest text-xs uppercase pt-6 animate-pulse">
-                ⚡ Lote promocional limitado a apenas 14 licenças restantes!
+              <p className="text-purple-400 font-black tracking-widest text-xs uppercase pt-2">
+                Economize tempo e publique com consistência estratégica
               </p>
             </div>
             
             {isPhotoMode ? (
               <div 
-                className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-5 px-8 rounded-2xl text-lg sm:text-xl font-display font-black w-full block shadow-xl shadow-blue-500/10 uppercase tracking-tight select-none"
+                className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-5 px-8 rounded-2xl text-lg sm:text-xl font-display font-black w-full block shadow-xl shadow-purple-500/10 uppercase tracking-tight select-none"
                 id="cta-final-purchase"
               >
-                🚀 QUERO GARANTIR MINHA VAGA E OS BÔNUS
+                🚀 QUERO GARANTIR MINHA VAGA
               </div>
             ) : (
               <a 
                 href={checkoutUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 text-white py-5 px-8 rounded-2xl text-lg sm:text-xl font-display font-black w-full block shadow-xl shadow-blue-500/20 transform hover:-translate-y-0.5 hover:shadow-blue-500/30 transition-all uppercase tracking-tight cursor-pointer"
+                className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white py-5 px-8 rounded-2xl text-lg sm:text-xl font-display font-black w-full block shadow-xl shadow-purple-500/20 transform hover:-translate-y-0.5 hover:shadow-purple-500/30 transition-all uppercase tracking-tight cursor-pointer"
                 id="cta-final-purchase"
               >
-                🚀 QUERO GARANTIR MINHA VAGA E OS BÔNUS
+                🚀 QUERO GARANTIR MINHA VAGA
               </a>
             )}
-            
-            <p className="text-[11px] text-zinc-500 mt-3 font-semibold">
-              🔒 Compra 100% segura • ⚡ Acesso imediato • 🛡️ 7 dias de garantia • 🔄 Atualizações gratuitas inclusas
-            </p>
             
             <div className="mt-8 grid grid-cols-3 gap-2 text-[10px] text-zinc-500 font-bold uppercase tracking-wider border-t border-zinc-900 pt-6">
               <div>
@@ -823,9 +1229,9 @@ export default function App() {
       {/* FAQ SECTION */}
       <section className="py-24 max-w-4xl mx-auto px-6">
         <div className="text-center space-y-4 mb-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-blue-500">Dúvidas Frequentes</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-purple-500">Dúvidas Frequentes</span>
           <h2 className="text-3xl sm:text-4xl font-display font-extrabold italic">Ainda tem alguma dúvida? Perguntas frequentes:</h2>
-          <div className="w-20 h-1 bg-blue-500/50 mx-auto rounded-full" />
+          <div className="w-20 h-1 bg-purple-500/50 mx-auto rounded-full" />
         </div>
 
         <div className="space-y-4">
@@ -852,7 +1258,7 @@ export default function App() {
                     <span className="font-bold text-white text-sm sm:text-base leading-snug">{item.question}</span>
                     <ChevronDown 
                       className={`w-5 h-5 text-zinc-400 transition-transform duration-300 shrink-0 ml-4 ${
-                        openFaqId === item.id ? "rotate-180 text-blue-500" : ""
+                        openFaqId === item.id ? "rotate-180 text-purple-500" : ""
                       }`} 
                     />
                   </button>
@@ -884,9 +1290,8 @@ export default function App() {
         </div>
       </footer>
 
-
-
-
+        </>
+      )}
 
     </div>
   );
