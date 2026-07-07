@@ -380,7 +380,7 @@ export default function App() {
             
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold leading-[1.1] tracking-tight text-white">
               Pare de Perder Horas Criando Conteúdo. <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">A IA Faz Todo o Trabalho Para Você</span> em Minutos.
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">Aprenda o método de IA que já ajudou mais de 10 mil pessoas</span> a produzir conteúdos, anúncios e estratégias de vendas, mesmo sem experiência.
             </h1>
             
             <p className="text-lg md:text-xl text-zinc-400 font-light max-w-2xl mx-auto lg:mx-0 leading-relaxed">
