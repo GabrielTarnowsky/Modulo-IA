@@ -390,7 +390,7 @@ export default function App() {
             </h1>
             
             <p className="text-lg md:text-xl text-zinc-400 font-light max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              O método definitivo de Copywriting e Engenharia de Prompts para transformar seu Instagram em uma <strong className="text-white">máquina automática de atração de clientes</strong> — sem precisar gastar horas do seu dia ou sofrer com bloqueio criativo.
+              Tenha acesso a mais de 500 prompts profissionais, calendário de conteúdo para 365 dias, copies de alta conversão e um método passo a passo <strong className="text-white">para criar conteúdos que chamam atenção</strong> — sem precisar gastar horas do seu dia.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
