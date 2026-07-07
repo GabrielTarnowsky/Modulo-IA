@@ -36,10 +36,14 @@ import { GeneratedPost, GeneratedAdCreative } from "./types";
 import CheckoutExample from "./CheckoutExample";
 import CreativesView from "./components/CreativesView";
 
-const ebookCover = "/assets/images/ebook_cover_mockup_1782842871838.jpg";
-const bonusOneCover = "/assets/images/bonus_one_biblioteca_1783428972753.jpg";
-const bonusTwoCover = "/assets/images/bonus_two_pack_1783428983587.jpg";
-const bonusThreeCover = "/assets/images/bonus_three_calendario_1783428999420.jpg";
+// @ts-ignore
+import ebookCover from "./assets/images/ebook_cover_mockup_1782842871838.jpg";
+// @ts-ignore
+import bonusOneCover from "./assets/images/bonus_one_biblioteca_1783428972753.jpg";
+// @ts-ignore
+import bonusTwoCover from "./assets/images/bonus_two_pack_1783428983587.jpg";
+// @ts-ignore
+import bonusThreeCover from "./assets/images/bonus_three_calendario_1783428999420.jpg";
 
 export default function App() {
   const [currentView, setCurrentView] = useState<"landing" | "checkout" | "creatives">("landing");
